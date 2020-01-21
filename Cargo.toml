@@ -1,0 +1,11 @@
+[package]
+name = "immers"
+version = "0.1.0"
+authors = ["Mees Delzenne <mees.delzenne@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+immers_core = {path = "./immers_core"}
+immers_derive = {path = "./immers_derive"}
