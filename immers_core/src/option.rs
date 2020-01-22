@@ -3,8 +3,11 @@ use std::fmt;
 
 #[derive(Clone)]
 pub enum OptionPatch<T: Patchable> {
+    /// Change from `Some(A)` to `Some(B)` where `B` is `T::Patch` applied to `A`
     SomeChange(T::Patch),
+    /// Change from `None` to `Some(T)`
     SomeCreate(T),
+    /// Change from `Some(_)` to `None`
     NoneCreate,
 }
 

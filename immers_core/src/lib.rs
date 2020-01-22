@@ -18,6 +18,19 @@ pub trait Patchable {
     fn apply(&mut self, patch: Self::Patch) -> Result<(), Self::Error>;
 }
 
+impl<T: Patchable> Patchable for Box<T> {
+    type Patch = T::Patch;
+    type Error = T::Error;
+
+    fn produce(&self, other: &Self) -> Option<Self::Patch> {
+        (**self).produce(other)
+    }
+
+    fn apply(&mut self, patch: Self::Patch) -> Result<(), Self::Error> {
+        (**self).apply(patch)
+    }
+}
+
 macro_rules! impl_patchable_primitive {
     ($x:ty) => {
         impl Patchable for $x {
@@ -26,7 +39,7 @@ macro_rules! impl_patchable_primitive {
 
             fn produce(&self, other: &Self) -> Option<Self::Patch> {
                 if *self != *other {
-                    Some(*other)
+                    Some(other.clone())
                 } else {
                     None
                 }
@@ -50,7 +63,24 @@ macro_rules! impl_patchable_primitives{
     };
 }
 
-impl_patchable_primitives!(u8, i8, u16, i16, u32, i32, f32, u64, i64, f64);
+impl_patchable_primitives!(
+    u8,
+    i8,
+    u16,
+    i16,
+    u32,
+    i32,
+    f32,
+    u64,
+    i64,
+    f64,
+    usize,
+    isize,
+    String,
+    bool,
+    (),
+    char
+);
 
 #[derive(Clone)]
 enum TestPatch {
