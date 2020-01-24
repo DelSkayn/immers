@@ -18,6 +18,18 @@ pub trait Patchable {
     fn apply(&mut self, patch: Self::Patch) -> Result<(), Self::Error>;
 }
 
+pub trait MapPatchable: Patchable + Sized {
+    fn map_produce(&self, f: impl FnOnce(Self) -> Self) -> Option<Self::Patch>;
+}
+
+impl<T: Patchable + Clone> MapPatchable for T {
+    fn map_produce(&self, f: impl FnOnce(Self) -> Self) -> Option<Self::Patch> {
+        let clone = self.clone();
+        let clone = f(clone);
+        self.produce(&clone)
+    }
+}
+
 impl<T: Patchable> Patchable for Box<T> {
     type Patch = T::Patch;
     type Error = T::Error;
